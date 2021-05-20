@@ -136,8 +136,20 @@ IMAGE_CMD_ostree () {
     cat ${IMAGE_MANIFEST} | cut -d " " -f1,3 > usr/package.manifest
 }
 
+prepare_ostree_area() {
+    bbwarn "Preparing the ostree repo area"
+    if [ ! -d ${OSTREE_REPO} ]; then
+        git clone ${OSTREE_REPO_GIT} ${OSTREE_REPO}
+    else
+        cd ${OSTREE_REPO}
+        git status
+        git pull || true
+    fi
+}
+
 IMAGE_TYPEDEP_ostreecommit = "ostree"
 do_image_ostreecommit[depends] += "ostree-native:do_populate_sysroot"
+do_image_ostreecommit[prefuncs] += "prepare_ostree_area"
 do_image_ostreecommit[lockfiles] += "${OSTREE_REPO}/ostree.lock"
 IMAGE_CMD_ostreecommit () {
     bbwarn "Using meta-pelion-edge version of do_image_ostreecommit"
@@ -164,9 +176,13 @@ IMAGE_CMD_ostreecommit () {
 
 IMAGE_TYPEDEP_ostreepush = "ostreecommit"
 do_image_ostreepush[depends] += "aktualizr-native:do_populate_sysroot ca-certificates-native:do_populate_sysroot"
-do_image_ostreepush[lockfiles] += "${OSTREE_REPO}/ostree.lock"
 IMAGE_CMD_ostreepush () {
     bbwarn "Using meta-pelion-edge version of do_image_ostreepush"
+    cd ${OSTREE_REPO}
+    touch refs/remotes/.gitignore
+    ostree_target_hash=$(cat ${WORKDIR}/ostree_manifest)
+    git commit -a -m "${ostree_target_hash}"
+    git push
 }
 
 IMAGE_TYPEDEP_garagesign = "ostreepush"
@@ -175,11 +191,11 @@ do_image_garagesign[depends] += "unzip-native:do_populate_sysroot"
 # garage-sign simultaneously for two images often causes problems.
 do_image_garagesign[lockfiles] += "${DEPLOY_DIR_IMAGE}/garagesign.lock"
 IMAGE_CMD_garagesign () {
-    bbwarn "Using meta-pelion-edge version of IMAGE_CMD_garagesign"
+    bbwarn "Using meta-pelion-edge version of do_image_garagesign"
 }
 
 IMAGE_TYPEDEP_garagecheck = "garagesign"
 IMAGE_CMD_garagecheck () {
-    bbwarn "Using meta-pelion-edge version of IMAGE_CMD_garagecheck"
+    bbwarn "Using meta-pelion-edge version of do_image_garagecheck"
 }
 # vim:set ts=4 sw=4 sts=4 expandtab:
