@@ -181,7 +181,8 @@ IMAGE_CMD_ostreepush () {
     cd ${OSTREE_REPO}
     touch refs/remotes/.gitignore
     ostree_target_hash=$(cat ${WORKDIR}/ostree_manifest)
-    git commit -a -m "${ostree_target_hash}"
+    git add .
+    git commit -m "${ostree_target_hash}"
     git push
 }
 
