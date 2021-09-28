@@ -1,0 +1,24 @@
+From 983d7879c4922c6db8d555cfe93f31a5914a9a01 Mon Sep 17 00:00:00 2001
+From: Ari Parkkila <ari.parkkila@pelion.com>
+Date: Tue, 28 Sep 2021 08:18:58 +0300
+Subject: [PATCH] Read UART baud rate from command line
+
+
+diff --git a/examples/nordic_uart_client/main.c b/examples/nordic_uart_client/main.c
+index 3c85afd..2324348 100644
+--- a/examples/nordic_uart_client/main.c
++++ b/examples/nordic_uart_client/main.c
+@@ -1165,6 +1165,10 @@ int main(int argc, char * argv[])
+     {
+         serial_port = argv[1];
+     }
++    if (argc > 2)
++    {
++        baud_rate = atoi(argv[2]);
++    }
+ 
+     printf("Serial port used: %s\n", serial_port);
+     printf("Baud rate used: %d\n", baud_rate);
+-- 
+2.32.0
+

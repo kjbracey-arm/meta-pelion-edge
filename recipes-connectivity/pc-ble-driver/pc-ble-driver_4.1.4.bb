@@ -16,6 +16,8 @@ NO_GENERIC_LICENSE[Nordic-Semiconductor-5-Clause] = "LICENSE"
 SRC_URI = "git://github.com/NordicSemiconductor/pc-ble-driver.git;protocol=https"
 SRCREV = "bc8821bf74edaad84e5eaf07782affd7005c70a6"
 
+SRC_URI += " file://0001-Read-UART-baud-rate-from-command-line.patch "
+
 DEPENDS = "asio catch2 fmt spdlog udev"
 
 # Recipe revision, please bump when changed.
